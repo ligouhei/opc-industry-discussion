@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f5f4ef">
-  <meta name="description" content="从 VPEvolve 实验出发，讨论真实 OPC 任务的环境、输入输出、工具、迭代和验收。">
-  <title>OPC 工业任务交流 · 从 Benchmark 到真实工作流</title>
+  <meta name="description" content="从 ReAct 的训练要素出发，对照 VPEvolve 实验，讨论构造真实 OPC 任务、轨迹与评价数据需要的材料。">
+  <title>OPC Agent 训练数据与环境 · 技术交流</title>
   <style>
     :root{--paper:#f5f4ef;--ink:#19342f;--muted:#6c7972;--line:#d7ddd4;--accent:#247665;--wash:#e6ece4;--orange:#bd603c;--white:#fffefa}
     *{box-sizing:border-box}html{height:100%}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;-webkit-font-smoothing:antialiased}button,a,textarea{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid var(--orange);outline-offset:5px}button:disabled{cursor:default;opacity:.3}
@@ -25,93 +25,92 @@
     <div class="brand"><span class="brand-mark" aria-hidden="true"></span>OPC / DIALOGUE</div>
     <div class="sidebar-label">DISCUSSION GUIDE</div>
     <nav class="nav" aria-label="分页导航"></nav>
-    <div class="sidebar-foot"><strong>与华虹工程师交流</strong><br>从 Benchmark 到工业工作流<br>以问题为主 · 以实际案例校准</div>
+    <div class="sidebar-foot"><strong>与华虹技术交流</strong><br>OPC Agent 的训练数据与环境<br>任务 · 动作 · 反馈 · 验收</div>
   </aside>
   <main class="main">
     <header class="topbar">
-      <span class="eyebrow">OPC AGENT · 从实验到实际任务</span>
+      <span class="eyebrow">OPC AGENT · 训练数据与执行环境</span>
       <div class="actions"><button class="text-button" id="notes-toggle" aria-expanded="false">现场记录</button><button class="text-button export" id="export">导出记录</button><button class="text-button" id="print">打印 / PDF</button></div>
     </header>
     <div class="stage" aria-live="polite">
-      <section class="slide" data-title="交流背景" aria-labelledby="title-0">
-        <div class="section-tag">00 / 为什么来请教</div>
-        <div class="cover-head"><h1 id="title-0">从 Benchmark，<br>走向真实 OPC 任务。</h1><div class="cover-stamp">BENCHMARK<br>↓<br>INDUSTRIAL WORKFLOW</div></div>
-        <p class="intro">我们希望用大模型做 OPC 的迭代优化。现在的认识主要来自 VPEvolve 及实验适配，还缺少真实工厂任务的参照，想先把工作流理解清楚。</p>
-        <div class="flow" aria-label="类比 coding agent 的五个要素">
-          <div class="flow-item"><small>WORKSPACE</small><b>环境与文件</b><em>工程师拿到什么？</em></div>
-          <div class="flow-item"><small>TOOLS</small><b>工具与动作</b><em>能运行、能修改什么？</em></div>
-          <div class="flow-item"><small>TASK</small><b>具体任务</b><em>这次要解决什么？</em></div>
-          <div class="flow-item"><small>ITERATION</small><b>执行与反馈</b><em>如何观察、再调整？</em></div>
-          <div class="flow-item"><small>ACCEPTANCE</small><b>验收与交付</b><em>怎样判断做完了？</em></div>
+      <section class="slide" data-title="ReAct 与训练要素" aria-labelledby="title-0">
+        <div class="section-tag">00 / ReAct 与模型训练</div>
+        <div class="cover-head"><h1 id="title-0">训练 OPC Agent，<br>需要什么数据与环境？</h1><div class="cover-stamp">TASK → ACTION<br>↑　　　　↓<br>FEEDBACK ← TOOL</div></div>
+        <p class="intro">ReAct：模型根据任务和已有结果选择动作，调用工具，观察反馈，再决定下一步。训练与评测这类能力，需要可执行的任务、真实反馈，以及明确的完成标准。</p>
+        <div class="flow" aria-label="训练与评测的五个要素">
+          <div class="flow-item"><small>TASK</small><b>任务</b><em>目标、约束、初始状态</em></div>
+          <div class="flow-item"><small>ENVIRONMENT</small><b>环境</b><em>文件、软件、模型、资料</em></div>
+          <div class="flow-item"><small>ACTION</small><b>动作</b><em>可编辑内容、可用工具</em></div>
+          <div class="flow-item"><small>OBSERVATION</small><b>反馈</b><em>运行结果、日志、诊断</em></div>
+          <div class="flow-item"><small>EVALUATION</small><b>评价</b><em>验收规则、得分、终止条件</em></div>
         </div>
-        <div class="context"><span class="context-label">当前实验</span><p><strong>GDS / 局部窗口 → 初始 recipe + 固定研究工艺模型 → Calibre → 指标反馈 → 再修改。</strong><br>希望请您指出：这条流程与工业实践的关键差异在哪里？</p></div>
+        <div class="context"><span class="context-label">交流目标</span><p><strong>以真实 OPC 工作为参照，确定任务包和数据采集方式。</strong><br>工程师的操作记录可构成示范轨迹；可重复运行的环境与验收程序可支持模型自行探索、训练和评测。</p></div>
       </section>
-      <section class="slide" data-title="输入与环境" hidden aria-labelledby="title-1">
-        <div class="section-tag">01 / 环境与任务包</div><h2 id="title-1">一次真实任务，<br>工程师会拿到什么？</h2><p class="intro">类比 coding：开始工作之前，workspace 里有哪些东西？</p>
+      <section class="slide" data-title="Bench 任务结构" hidden aria-labelledby="title-1">
+        <div class="section-tag">01 / 当前实验与工作假设</div><h2 id="title-1">我们从 Benchmark，<br>推测出的任务结构。</h2><p class="intro">目前的信息主要来自 VPEvolve 及我们的实验适配。以下是当前实验配置，不能直接视为工厂的标准工作流。</p>
+        <table class="metric-table"><thead><tr><th>要素</th><th>当前实验中有什么</th></tr></thead><tbody>
+          <tr><td>输入与环境</td><td>GDS、选定图层与局部窗口、初始 recipe、固定研究工艺模型、Calibre。</td></tr>
+          <tr><td>任务与动作</td><td>在给定约束下改善结果；修改 recipe、运行工具、查看输出，再进行下一轮调整。</td></tr>
+          <tr><td>反馈与评价</td><td>轮廓、热点、EPE / PVB 等指标及规则检查；与基线比较，判断候选是否可保留。</td></tr>
+        </tbody></table><p class="metric-note">需要对齐：真实任务是否也能这样拆解？<span>差异可能在版图规模、工艺模型、操作范围、工具反馈和验收要求，需要用实际任务逐项确认。</span></p><p class="takeaway">下一步不是直接扩展 benchmark，而是拿到实际任务的组成和执行过程，据此构造数据。</p>
+      </section>
+      <section class="slide" data-title="任务与初始环境" hidden aria-labelledby="title-2">
+        <div class="section-tag">02 / Task + Workspace</div><h2 id="title-2">一条真实任务，<br>从什么状态开始？</h2><p class="intro">类比 coding：任务描述 + git / workspace + 依赖环境。OPC 中需要对应到具体文件和配置。</p>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>版图的范围有多大？</h3><p>是整个芯片的 GDS、指定图层，还是一组代表性局部图形？局部窗口由谁选，周围的邻近图形如何保留？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>除了版图，还会附带什么？</h3><p>初始 recipe、工艺模型、目标图形、工具及版本、已有热点和验收标准，哪些通常已准备好？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>哪些固定，哪些需要开发？</h3><p>工艺模型由哪个团队建立和校准？OPC 工程师的任务边界在哪里，哪些参数或文件允许调整？</p></div></div>
-        </div><p class="takeaway">想确认：一个可执行的工业 OPC 任务包，最少包含哪些文件与约定。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>任务如何提出，具体要解决什么？</h3><p>开发一套 recipe、修复一类热点、适配新设计，还是完成某个图层的 OPC？一次任务的范围和目标如何描述？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>初始目录中有哪些文件？</h3><p>完整芯片、指定图层或局部图形？是否附带 target、初始 recipe、工艺模型、已有结果、运行脚本和参考资料？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>哪些条件固定，哪些属于优化对象？</h3><p>工具及版本、模型及校准状态、测量方式和规则检查由谁确定？哪些内容允许 OPC 工程师调整？</p></div></div>
+        </div><p class="takeaway">对应数据：任务描述、初始文件快照、依赖与版本、固定项和可修改项。</p>
       </section>
-      <section class="slide" data-title="工具与动作" hidden aria-labelledby="title-2">
-        <div class="section-tag">02 / 工具与权限边界</div><h2 id="title-2">工程师能改什么，<br>又通过什么工具完成？</h2><p class="intro">类比 coding：模型需要知道可用的命令、可编辑的文件，以及执行后的反馈。</p>
+      <section class="slide" data-title="动作与工具接口" hidden aria-labelledby="title-3">
+        <div class="section-tag">03 / Action + Tools</div><h2 id="title-3">模型应当能做哪些动作，<br>通过哪些接口执行？</h2><p class="intro">类比 coding：编辑文件、执行 command、调用 tools。需要保留工程师实际可用的操作能力。</p>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>主要操作是改 recipe，还是直接改局部几何？</h3><p>调参数、写图形相关规则、移动边缘、调整 SRAF，这些动作分别在什么场景下使用？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>实际使用哪些工具与资料？</h3><p>如果使用 Calibre，通常用哪些产品或模块？哪些操作走命令行或脚本，哪些依赖 GUI？遇到问题会查哪些手册或内部经验？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>一次运行能返回哪些诊断信息？</h3><p>只有汇总分数，还是能拿到轮廓、误差位置、违规类型、日志和可视化？工程师怎样据此决定下一步？</p></div></div>
-        </div><p class="takeaway">想确认：Agent 应获得怎样的工具接口、操作空间和观察结果。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>优化动作的实际范围是什么？</h3><p>调 recipe 参数、改分段策略、写图形相关规则、移动局部边缘、调整 SRAF，分别通过什么方式完成？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>哪些工具可以脚本化，哪些依赖 GUI？</h3><p>使用哪些 Calibre 产品或其他软件？命令、输入输出格式、参数说明和错误诊断是否有完整文档与示例？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>工程师做决策时还依赖什么信息？</h3><p>手册、历史案例、内部规则、可视化和经验判断，哪些可以成为模型可读取的上下文或检索资料？</p></div></div>
+        </div><p class="takeaway">对应数据：工具接口、命令示例、可编辑文件、操作文档，以及实际使用的参考资料。</p>
       </section>
-      <section class="slide" data-title="局部到整层" hidden aria-labelledby="title-3">
-        <div class="section-tag">03 / 优化与迭代</div><h2 id="title-3">局部调好以后，<br>如何覆盖整个图层？</h2><p class="intro">我们目前主要在局部窗口里反复修改、仿真、比较结果。</p>
+      <section class="slide" data-title="迭代轨迹与反馈" hidden aria-labelledby="title-4">
+        <div class="section-tag">04 / Action → Observation → Next Action</div><h2 id="title-4">一次工程迭代，<br>怎样记录为训练数据？</h2><p class="intro">只保存最终 recipe，无法还原“遇到了什么问题、做了什么修改、结果怎样”。需要把动作与反馈对应起来。</p>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>开发 recipe 的典型流程是什么？</h3><p>先在测试图形或热点上调好，再推广到全图层；还是直接跑全图层，再挑出问题迭代？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>一次局部修正，作用范围是什么？</h3><p>只修某一个坐标位置，还是提炼成适用于所有相似图形的规则？这些规则怎样匹配、如何处理相互冲突？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>工程师通常怎样安排实验？</h3><p>先解决哪类问题？何时做局部验证、全图层验证或回退？迭代次数、算力和人工判断各占什么位置？</p></div></div>
-        </div><p class="takeaway">想确认：一次真实的“观察 → 修改 → 运行 → 再判断”是怎样发生的。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>每轮实际看哪些结果？</h3><p>汇总指标之外，是否查看轮廓、误差坐标、违规类型、局部图形、日志及不同工艺条件下的结果？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>修改与运行过程能否完整保留？</h3><p>保存文件差异、工具命令与参数、输出文件、指标、耗时，以及候选被保留或回退的结论；同时保留失败尝试。</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>局部实验与全图层验证怎样衔接？</h3><p>工程师何时选热点、改通用规则、跑回归或全图层？能否从一个真实案例还原完整的决策顺序？</p></div></div>
+        </div><p class="takeaway">对应数据：初始状态 → 修改 / 调用 → 真实输出 → 指标与工程判断 → 下一轮，直到任务结束。</p>
       </section>
-      <section class="slide" data-title="泛化与回归" hidden aria-labelledby="title-4">
-        <div class="section-tag">04 / 改善能否推广</div><h2 id="title-4">怎样避免“修好这里，<br>弄坏那里”？</h2><p class="intro">局部指标变好，是否足以说明 recipe 真正变好了？</p>
+      <section class="slide" data-title="验收与训练反馈" hidden aria-labelledby="title-5">
+        <div class="section-tag">05 / Evaluation + Reward</div><h2 id="title-5">怎样把工程验收，<br>变成可计算的反馈？</h2><p class="intro">先明确工业上的合格标准，再设计训练得分。不能仅凭一个局部指标下降，就判断任务完成。</p>
+        <table class="metric-table"><thead><tr><th>需要明确</th><th>讨论内容</th></tr></thead><tbody>
+          <tr><td>优化目标</td><td>EPE、CD、工艺窗口、PVB、运行成本等如何排序？最坏点、违规数量与整体统计怎样取舍？</td></tr>
+          <tr><td>硬约束</td><td>哪些掩模规则、SRAF 打印问题、工艺条件或其他退化不可接受？如何自动检查？</td></tr>
+          <tr><td>完成条件</td><td>需要达到什么阈值、通过哪些回归？何时必须做全图层检查，何时还需晶圆测量或人工确认？</td></tr>
+        </tbody></table><p class="metric-note">哪些判断可以写成程序，哪些仍需工程师判定？<span>模型误差、仿真不稳定、运行失败、预算耗尽和任务未完成，应分别怎样记录与评价？</span></p><p class="takeaway">对应数据：验收程序或规则、基线结果、候选得分、失败原因，以及必要的人工标签。</p>
+      </section>
+      <section class="slide" data-title="数据覆盖与泛化" hidden aria-labelledby="title-6">
+        <div class="section-tag">06 / 任务分布与独立评测</div><h2 id="title-6">哪些任务与图形，<br>才有代表性？</h2><p class="intro">训练要覆盖真实工作中的问题，评测要检查模型能否处理未见过的任务，而不只是记住已有案例。</p>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>用什么回归集验证一条新规则？</h3><p>测试图形、历史热点、代表性设计和全芯片检查分别在何时使用？怎样选取足够有代表性的样本？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>局部窗口的结论，怎样确认可靠？</h3><p>裁剪边界、周围图形和版图密度会带来哪些影响？需要多大范围的上下文，怎样验证边界没有改变结论？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>局部收益与全局退化，怎样取舍？</h3><p>如果最坏点改善，但其他位置或其他工艺条件变差，什么情况可以接受，什么情况必须回退？</p></div></div>
-        </div><p class="takeaway">想确认：工业上的回归覆盖、推广门槛和保留新版本的依据。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>真实工作主要由哪些任务构成？</h3><p>不同图层、工艺、设计、热点类型和任务阶段，各自常见的难点是什么？哪些环节最耗人工和经验？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>局部数据需要保留多大上下文？</h3><p>裁剪窗口、邻近图形、密度和边界怎样影响结果？局部修正如何验证能推广到相似图形和整个图层？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>怎样安排训练集、回归集与独立测试集？</h3><p>按设计、图形族或工艺划分是否更合理？实际有哪些历史案例和未参与调参的设计可用于验证？</p></div></div>
+        </div><p class="takeaway">对应数据：代表性任务集合、图形上下文、回归样本和独立测试任务，而非单个成功热点。</p>
       </section>
-      <section class="slide" data-title="指标与验收" hidden aria-labelledby="title-5">
-        <div class="section-tag">05 / 判断任务完成</div><h2 id="title-5">什么结果，<br>才算真正合格？</h2><p class="intro">希望区分必须满足的硬约束、用于比较优劣的指标，以及最终确认方式。</p>
-        <table class="metric-table"><thead><tr><th>想确认的维度</th><th>请教的问题</th></tr></thead><tbody>
-          <tr><td>图形保真</td><td>EPE、CD 等指标怎样设阈值？最坏点、违规数量和整体统计，分别怎样影响验收？</td></tr>
-          <tr><td>工艺鲁棒性</td><td>怎样考核工艺窗口、焦距 / 剂量变化、PVB？哪些工艺条件必须覆盖？</td></tr>
-          <tr><td>可制造与成本</td><td>掩模制造规则、SRAF 意外打印、运行时间和掩模复杂度，哪些是一票否决，哪些可以权衡？</td></tr>
-        </tbody></table>
-        <p class="metric-note">仿真通过后，还需要怎样的实际测量确认？<span>模型误差、晶圆测量与仿真不一致时，怎样定位责任和调整流程？</span></p><p class="takeaway">想确认：可机器执行的验收标准，以及仿真合格与生产合格的关系。</p>
-      </section>
-      <section class="slide" data-title="交付与难点" hidden aria-labelledby="title-6">
-        <div class="section-tag">06 / 输出与工作重心</div><h2 id="title-6">最后交付什么，<br>精力主要花在哪里？</h2><p class="intro">我们想找出值得交给 Agent 的具体环节，而不只是在 benchmark 上调分数。</p>
-        <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>交付物到底是什么？</h3><p>优化后的掩模版图、可复用 recipe、工艺参数、验证报告和运行记录，分别由谁交付、谁验收？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>最费时间和经验的是哪一步？</h3><p>定位问题、理解成因、调参数、写局部规则、等待仿真、回归验证，还是跨团队确认？能否举一个近期的典型例子？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>我们的 benchmark 最遗漏什么？</h3><p>如果只能补上一个工业难点，您会选什么？哪些步骤适合先自动化，哪些判断仍需工程师负责？</p></div></div>
-        </div><p class="takeaway">想确认：真正有价值的任务边界，以及评价 Agent 是否有帮助的方法。</p>
-      </section>
-      <section class="slide" data-title="用实例串起来" hidden aria-labelledby="title-7">
-        <div class="section-tag">07 / 最后用一个例子串起来</div><h2 id="title-7">能否用一个脱敏任务，<br>带我们走一遍？</h2><p class="intro">不必先提供实际数据；先口述一个任务的结构，也能帮助我们建立正确理解。</p>
+      <section class="slide" data-title="需要的实际材料" hidden aria-labelledby="title-7">
+        <div class="section-tag">07 / 从真实任务构造数据</div><h2 id="title-7">先用一个真实任务，<br>把数据与环境对应起来。</h2><p class="intro">讨论哪些材料已有留存、哪些可以脱敏提供、哪些需要在后续执行中补充采集。</p>
         <dl class="task-sheet">
-          <div class="task-row"><dt>任务起点</dt><dd>谁提出了什么问题？最初有哪些文件、已有结果和固定条件？</dd></div>
-          <div class="task-row"><dt>可用动作</dt><dd>工程师会打开哪些工具、查什么资料，允许修改哪些内容？</dd></div>
-          <div class="task-row"><dt>一次迭代</dt><dd>看到什么现象 → 做出什么修改 → 跑什么检查 → 怎样决定保留或回退？</dd></div>
-          <div class="task-row"><dt>完成条件</dt><dd>满足哪些阈值、完成哪些回归、由谁确认，最后交付什么？</dd></div>
-        </dl><p class="endline">希望带走：最小任务包 + 基线工作流 + 验收方式。<span>据此再设计一个贴近真实工作的 OPC Agent 试点。</span></p>
+          <div class="task-row"><dt>任务与输入</dt><dd>具体目标、初始 GDS / 图层 / 窗口、recipe、工艺模型或等价可调用环境。</dd></div>
+          <div class="task-row"><dt>执行环境</dt><dd>软件与版本、运行入口、工具接口、依赖配置、实际使用的手册或参考案例。</dd></div>
+          <div class="task-row"><dt>过程与结果</dt><dd>逐轮修改、命令、输出、指标和保留 / 回退结论；包含失败尝试及最终交付物。</dd></div>
+          <div class="task-row"><dt>验收与测试</dt><dd>基线、硬约束、完成标准、回归集，以及可独立验证的新增任务。</dd></div>
+        </dl><p class="endline">据此构造：可运行任务 + 工程师示范轨迹 + 可验证反馈。<span>先完成一个任务的重放与验收，再扩展任务类型和数据规模。</span></p>
       </section>
     </div>
-    <section class="notes" id="notes-panel" hidden><label for="meeting-note" id="notes-label">本页记录</label><textarea id="meeting-note" placeholder="记下工程师的回答、实际案例或待确认事项……"></textarea><p class="notes-tip">记录仅保存在当前浏览器，可点击“导出记录”保存为文本。</p></section>
+    <section class="notes" id="notes-panel" hidden><label for="meeting-note" id="notes-label">本页记录</label><textarea id="meeting-note" placeholder="记录实际流程、可提供的材料与后续采集项……"></textarea><p class="notes-tip">记录仅保存在当前浏览器，可点击“导出记录”保存为文本。</p></section>
     <footer class="footer"><div><div class="progress-label"><strong id="page-current">01</strong> / 08</div><div class="progress-track"><div class="progress-fill" id="progress"></div></div></div><div class="paging"><span class="key-hint">← → 翻页 · F 全屏</span><button id="prev" aria-label="上一页">← 上一页</button><button class="next" id="next" aria-label="下一页">下一页 →</button></div></footer>
   </main>
 </div>
 <script>
   const slides=[...document.querySelectorAll('.slide')],nav=document.querySelector('.nav');
-  const titles=slides.map(s=>s.dataset.title),storageKey='opc-industry-discussion-notes-v1';
+  const titles=slides.map(s=>s.dataset.title),storageKey='opc-industry-discussion-notes-react-v2';
   let current=0,notes={};
   try{notes=JSON.parse(localStorage.getItem(storageKey)||'{}');if(!notes||typeof notes!=='object'||Array.isArray(notes))notes={}}catch{notes={}}
   const note=document.querySelector('#meeting-note');
