@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="description" content="从 VPEvolve 实验出发，讨论真实 OPC 任务的环境、输入输出、工具、迭代和验收。">
+  <title>OPC 工业任务交流 · 从 Benchmark 到真实工作流</title>
+  <style>
+    :root{--paper:#f5f4ef;--ink:#19342f;--muted:#6c7972;--line:#d7ddd4;--accent:#247665;--wash:#e6ece4;--orange:#bd603c;--white:#fffefa}
+    *{box-sizing:border-box}html{height:100%}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;-webkit-font-smoothing:antialiased}button,a,textarea{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid var(--orange);outline-offset:5px}button:disabled{cursor:default;opacity:.3}
+    .app{min-height:100svh;display:grid;grid-template-columns:230px 1fr}.sidebar{padding:36px 24px 28px 32px;border-right:1px solid var(--line);display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;width:230px}.brand{display:flex;align-items:center;gap:10px;font-weight:750;letter-spacing:.08em;font-size:14px}.brand-mark{width:25px;height:25px;border:1.5px solid var(--ink);position:relative}.brand-mark:after{content:"";position:absolute;inset:5px;background:var(--accent)}.sidebar-label{font-size:11px;letter-spacing:.16em;color:var(--muted);margin-top:48px;margin-bottom:18px}.nav{display:flex;flex-direction:column;gap:5px}.nav button{border:0;background:transparent;color:var(--muted);text-align:left;border-radius:4px;padding:13px 10px;display:flex;gap:14px;align-items:center;font-size:14px;transition:.18s}.nav button span{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;opacity:.65}.nav button:hover{background:#eaece5;color:var(--ink)}.nav button[aria-current="page"]{background:var(--ink);color:var(--white)}.sidebar-foot{margin-top:auto;padding-top:24px;font-size:11px;line-height:1.9;color:var(--muted)}.sidebar-foot strong{font-weight:500;color:var(--ink)}
+    .main{grid-column:2;min-width:0;display:flex;flex-direction:column;min-height:100svh}.topbar{height:88px;display:flex;align-items:center;justify-content:space-between;margin:0 5.5%;border-bottom:1px solid var(--line);gap:16px}.eyebrow{font-size:11px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}.actions{display:flex;gap:16px}.text-button{border:0;background:none;padding:6px 0;color:var(--muted);font-size:12px}.text-button:hover{color:var(--accent)}.stage{flex:1;display:flex;align-items:center;padding:42px 7% 30px;min-height:650px}.slide{width:100%;max-width:1050px;margin:auto;animation:appear .3s ease}.slide[hidden]{display:none}@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.section-tag{display:flex;align-items:center;gap:12px;color:var(--accent);font-size:12px;letter-spacing:.1em;margin-bottom:22px}.section-tag:before{content:"";height:1px;width:27px;background:var(--accent)}h1,h2,p{margin:0}h1{font-size:clamp(36px,4.2vw,66px);font-weight:650;line-height:1.28;letter-spacing:-.045em}h2{font-size:clamp(29px,3vw,46px);font-weight:620;line-height:1.35;letter-spacing:-.035em}.intro{color:var(--muted);font-size:16px;line-height:1.9;margin-top:20px;max-width:770px}.cover-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px}.cover-stamp{color:var(--accent);font-size:11px;line-height:1.8;letter-spacing:.12em;border-left:1px solid var(--line);padding-left:20px;white-space:nowrap;margin-bottom:10px}.flow{display:grid;grid-template-columns:repeat(5,1fr);margin-top:42px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.flow-item{padding:22px 15px 25px 0;position:relative}.flow-item:not(:last-child):after{content:"→";position:absolute;right:12px;top:44px;color:#97a69c}.flow small{display:block;font:10px ui-monospace,SFMono-Regular,monospace;color:var(--muted);margin-bottom:12px;letter-spacing:.08em}.flow b{display:block;font-size:18px;font-weight:600;margin-bottom:8px}.flow em{font-style:normal;font-size:12px;color:var(--muted);line-height:1.7}.context{margin-top:26px;display:flex;gap:20px;align-items:flex-start;font-size:13px;line-height:1.9}.context-label{color:var(--orange);white-space:nowrap}.context p{color:var(--muted)}.context strong{font-weight:500;color:var(--ink)}
+    .questions{margin-top:34px;border-top:1px solid var(--line)}.question{display:grid;grid-template-columns:42px 1fr;gap:12px;padding:23px 0;border-bottom:1px solid var(--line)}.question-num{font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--orange);padding-top:5px}.question h3{font-size:19px;line-height:1.55;font-weight:550;margin:0 0 6px}.question p{font-size:14px;line-height:1.85;color:var(--muted);max-width:850px}.takeaway{margin-top:25px;color:var(--accent);font-size:13px;line-height:1.8;display:flex;gap:13px}.takeaway:before{content:"↳";font-size:18px}.metric-table{width:100%;border-collapse:collapse;margin-top:30px;font-size:14px}.metric-table th{text-align:left;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.08em;padding:12px 16px 13px 0;border-bottom:1px solid var(--ink)}.metric-table td{padding:18px 16px 18px 0;border-bottom:1px solid var(--line);line-height:1.8;vertical-align:top}.metric-table td:first-child{width:22%;font-weight:550}.metric-table td:last-child{color:var(--muted)}.metric-note{margin-top:22px;font-size:16px;line-height:1.9}.metric-note span{color:var(--muted);font-size:14px;display:block;margin-top:4px}.task-sheet{margin-top:32px;background:var(--wash);padding:8px 28px;border-left:3px solid var(--accent)}.task-row{display:grid;grid-template-columns:110px 1fr;gap:20px;padding:16px 0;line-height:1.8;font-size:14px}.task-row+.task-row{border-top:1px solid #cfd9ce}.task-row dt{font-size:12px;color:var(--accent)}.task-row dd{margin:0}.endline{margin-top:26px;font-size:18px;line-height:1.7}.endline span{color:var(--muted);font-size:13px;display:block;margin-top:6px}.footer{margin:0 5.5%;border-top:1px solid var(--line);padding:22px 0 25px;display:flex;justify-content:space-between;align-items:center;gap:18px}.progress-label{font:12px ui-monospace,SFMono-Regular,monospace;color:var(--muted)}.progress-label strong{font-weight:500;color:var(--ink)}.progress-track{height:2px;width:110px;background:var(--line);margin-top:11px}.progress-fill{height:100%;background:var(--accent);transition:width .25s}.paging{display:flex;gap:10px;align-items:center}.paging button{background:transparent;border:1px solid var(--line);border-radius:3px;padding:12px 21px;color:var(--ink);font-size:13px}.paging .next{background:var(--ink);border-color:var(--ink);color:var(--white)}.key-hint{color:var(--muted);font-size:11px;margin-right:18px}.notes{margin:0 7% 25px;max-width:1050px}.notes label{display:block;font-size:12px;color:var(--muted);margin-bottom:9px}.notes textarea{display:block;width:100%;min-height:115px;resize:vertical;font-family:inherit;font-size:14px;line-height:1.8;color:var(--ink);background:var(--white);border:1px solid var(--line);padding:15px;border-radius:3px}.notes-tip{font-size:11px;color:var(--muted);margin-top:8px}.mobile-label{display:none}
+    @media(min-width:1600px){.stage{padding-top:65px;padding-bottom:50px}.question{padding:27px 0}.question h3{font-size:22px}.question p{font-size:16px}.intro{font-size:18px}}
+    @media(max-width:1050px){.app{grid-template-columns:190px 1fr}.sidebar{width:190px;padding:30px 18px}.stage{padding:35px 6% 28px}.cover-stamp{display:none}.flow-item{padding-right:20px}.flow b{font-size:16px}.flow em{font-size:11px}.flow-item:not(:last-child):after{right:6px}.question h3{font-size:17px}.key-hint{display:none}}
+    @media(max-width:720px){.app{display:block}.sidebar{position:static;width:100%;padding:19px 20px 0;border-right:0}.brand{font-size:12px}.brand-mark{width:20px;height:20px}.sidebar-label,.sidebar-foot{display:none}.nav{margin-top:19px;flex-direction:row;overflow-x:auto;padding-bottom:13px;gap:5px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav button{white-space:nowrap;font-size:12px;padding:9px 11px}.nav button span{display:none}.main{min-height:calc(100svh - 117px)}.topbar{height:54px;margin:0 20px}.eyebrow{font-size:9px;letter-spacing:.08em}.actions{gap:13px}.topbar .eyebrow{font-size:0}.topbar .eyebrow:after{content:"OPC 交流";font-size:10px}.text-button{font-size:11px}.stage{min-height:0;padding:35px 24px;align-items:flex-start}.section-tag{font-size:11px;margin-bottom:18px}h1{font-size:39px}h2{font-size:29px}.intro{font-size:14px;margin-top:15px}.flow{grid-template-columns:1fr;margin-top:27px}.flow-item{display:grid;grid-template-columns:75px 100px 1fr;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);gap:6px}.flow-item:last-child{border-bottom:0}.flow small,.flow b{margin:0}.flow b{font-size:14px}.flow em{font-size:11px}.flow-item:not(:last-child):after{display:none}.context{gap:12px;font-size:12px;margin-top:20px}.questions{margin-top:25px}.question{grid-template-columns:25px 1fr;gap:7px;padding:21px 0}.question h3{font-size:17px}.question p{font-size:13px}.takeaway{font-size:12px;margin-top:21px}.footer{margin:0 20px;padding:18px 0;position:relative}.paging button{padding:11px 15px;font-size:12px}.progress-track{width:70px}.metric-table{font-size:12px;margin-top:24px}.metric-table td{padding:15px 8px 15px 0}.metric-table td:first-child{width:24%}.metric-note{font-size:15px}.metric-note span{font-size:12px}.task-sheet{padding:5px 17px;margin-top:24px}.task-row{grid-template-columns:65px 1fr;gap:12px;font-size:13px;padding:14px 0}.task-row dt{font-size:11px}.endline{font-size:16px}.notes{margin:0 24px 24px}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+    @media print{@page{size:A4 landscape;margin:16mm}.sidebar,.topbar,.footer,.notes{display:none!important}.app,.main,.stage{display:block;min-height:0;padding:0;margin:0}.slide,.slide[hidden]{display:block!important;animation:none;break-after:page;padding:6mm 0;max-width:none}.slide:last-child{break-after:auto}h1{font-size:40px}h2{font-size:32px}.intro{font-size:14px}.question{padding:16px 0}.question h3{font-size:17px}.question p{font-size:13px}.questions{margin-top:22px}.flow{margin-top:25px}.context{font-size:12px}.cover-stamp{display:block}.task-sheet{background:#eef1ed!important;print-color-adjust:exact}.metric-table{font-size:13px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" aria-label="交流提纲">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>OPC / DIALOGUE</div>
+    <div class="sidebar-label">DISCUSSION GUIDE</div>
+    <nav class="nav" aria-label="分页导航"></nav>
+    <div class="sidebar-foot"><strong>与华虹工程师交流</strong><br>从 Benchmark 到工业工作流<br>以问题为主 · 以实际案例校准</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <span class="eyebrow">OPC AGENT · 从实验到实际任务</span>
+      <div class="actions"><button class="text-button" id="notes-toggle" aria-expanded="false">现场记录</button><button class="text-button export" id="export">导出记录</button><button class="text-button" id="print">打印 / PDF</button></div>
+    </header>
+    <div class="stage" aria-live="polite">
+      <section class="slide" data-title="交流背景" aria-labelledby="title-0">
+        <div class="section-tag">00 / 为什么来请教</div>
+        <div class="cover-head"><h1 id="title-0">从 Benchmark，<br>走向真实 OPC 任务。</h1><div class="cover-stamp">BENCHMARK<br>↓<br>INDUSTRIAL WORKFLOW</div></div>
+        <p class="intro">我们希望用大模型做 OPC 的迭代优化。现在的认识主要来自 VPEvolve 及实验适配，还缺少真实工厂任务的参照，想先把工作流理解清楚。</p>
+        <div class="flow" aria-label="类比 coding agent 的五个要素">
+          <div class="flow-item"><small>WORKSPACE</small><b>环境与文件</b><em>工程师拿到什么？</em></div>
+          <div class="flow-item"><small>TOOLS</small><b>工具与动作</b><em>能运行、能修改什么？</em></div>
+          <div class="flow-item"><small>TASK</small><b>具体任务</b><em>这次要解决什么？</em></div>
+          <div class="flow-item"><small>ITERATION</small><b>执行与反馈</b><em>如何观察、再调整？</em></div>
+          <div class="flow-item"><small>ACCEPTANCE</small><b>验收与交付</b><em>怎样判断做完了？</em></div>
+        </div>
+        <div class="context"><span class="context-label">当前实验</span><p><strong>GDS / 局部窗口 → 初始 recipe + 固定研究工艺模型 → Calibre → 指标反馈 → 再修改。</strong><br>希望请您指出：这条流程与工业实践的关键差异在哪里？</p></div>
+      </section>
+      <section class="slide" data-title="输入与环境" hidden aria-labelledby="title-1">
+        <div class="section-tag">01 / 环境与任务包</div><h2 id="title-1">一次真实任务，<br>工程师会拿到什么？</h2><p class="intro">类比 coding：开始工作之前，workspace 里有哪些东西？</p>
+        <div class="questions">
+          <div class="question"><span class="question-num">A</span><div><h3>版图的范围有多大？</h3><p>是整个芯片的 GDS、指定图层，还是一组代表性局部图形？局部窗口由谁选，周围的邻近图形如何保留？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>除了版图，还会附带什么？</h3><p>初始 recipe、工艺模型、目标图形、工具及版本、已有热点和验收标准，哪些通常已准备好？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>哪些固定，哪些需要开发？</h3><p>工艺模型由哪个团队建立和校准？OPC 工程师的任务边界在哪里，哪些参数或文件允许调整？</p></div></div>
+        </div><p class="takeaway">想确认：一个可执行的工业 OPC 任务包，最少包含哪些文件与约定。</p>
+      </section>
+      <section class="slide" data-title="工具与动作" hidden aria-labelledby="title-2">
+        <div class="section-tag">02 / 工具与权限边界</div><h2 id="title-2">工程师能改什么，<br>又通过什么工具完成？</h2><p class="intro">类比 coding：模型需要知道可用的命令、可编辑的文件，以及执行后的反馈。</p>
+        <div class="questions">
+          <div class="question"><span class="question-num">A</span><div><h3>主要操作是改 recipe，还是直接改局部几何？</h3><p>调参数、写图形相关规则、移动边缘、调整 SRAF，这些动作分别在什么场景下使用？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>实际使用哪些工具与资料？</h3><p>如果使用 Calibre，通常用哪些产品或模块？哪些操作走命令行或脚本，哪些依赖 GUI？遇到问题会查哪些手册或内部经验？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>一次运行能返回哪些诊断信息？</h3><p>只有汇总分数，还是能拿到轮廓、误差位置、违规类型、日志和可视化？工程师怎样据此决定下一步？</p></div></div>
+        </div><p class="takeaway">想确认：Agent 应获得怎样的工具接口、操作空间和观察结果。</p>
+      </section>
+      <section class="slide" data-title="局部到整层" hidden aria-labelledby="title-3">
+        <div class="section-tag">03 / 优化与迭代</div><h2 id="title-3">局部调好以后，<br>如何覆盖整个图层？</h2><p class="intro">我们目前主要在局部窗口里反复修改、仿真、比较结果。</p>
+        <div class="questions">
+          <div class="question"><span class="question-num">A</span><div><h3>开发 recipe 的典型流程是什么？</h3><p>先在测试图形或热点上调好，再推广到全图层；还是直接跑全图层，再挑出问题迭代？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>一次局部修正，作用范围是什么？</h3><p>只修某一个坐标位置，还是提炼成适用于所有相似图形的规则？这些规则怎样匹配、如何处理相互冲突？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>工程师通常怎样安排实验？</h3><p>先解决哪类问题？何时做局部验证、全图层验证或回退？迭代次数、算力和人工判断各占什么位置？</p></div></div>
+        </div><p class="takeaway">想确认：一次真实的“观察 → 修改 → 运行 → 再判断”是怎样发生的。</p>
+      </section>
+      <section class="slide" data-title="泛化与回归" hidden aria-labelledby="title-4">
+        <div class="section-tag">04 / 改善能否推广</div><h2 id="title-4">怎样避免“修好这里，<br>弄坏那里”？</h2><p class="intro">局部指标变好，是否足以说明 recipe 真正变好了？</p>
+        <div class="questions">
+          <div class="question"><span class="question-num">A</span><div><h3>用什么回归集验证一条新规则？</h3><p>测试图形、历史热点、代表性设计和全芯片检查分别在何时使用？怎样选取足够有代表性的样本？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>局部窗口的结论，怎样确认可靠？</h3><p>裁剪边界、周围图形和版图密度会带来哪些影响？需要多大范围的上下文，怎样验证边界没有改变结论？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>局部收益与全局退化，怎样取舍？</h3><p>如果最坏点改善，但其他位置或其他工艺条件变差，什么情况可以接受，什么情况必须回退？</p></div></div>
+        </div><p class="takeaway">想确认：工业上的回归覆盖、推广门槛和保留新版本的依据。</p>
+      </section>
+      <section class="slide" data-title="指标与验收" hidden aria-labelledby="title-5">
+        <div class="section-tag">05 / 判断任务完成</div><h2 id="title-5">什么结果，<br>才算真正合格？</h2><p class="intro">希望区分必须满足的硬约束、用于比较优劣的指标，以及最终确认方式。</p>
+        <table class="metric-table"><thead><tr><th>想确认的维度</th><th>请教的问题</th></tr></thead><tbody>
+          <tr><td>图形保真</td><td>EPE、CD 等指标怎样设阈值？最坏点、违规数量和整体统计，分别怎样影响验收？</td></tr>
+          <tr><td>工艺鲁棒性</td><td>怎样考核工艺窗口、焦距 / 剂量变化、PVB？哪些工艺条件必须覆盖？</td></tr>
+          <tr><td>可制造与成本</td><td>掩模制造规则、SRAF 意外打印、运行时间和掩模复杂度，哪些是一票否决，哪些可以权衡？</td></tr>
+        </tbody></table>
+        <p class="metric-note">仿真通过后，还需要怎样的实际测量确认？<span>模型误差、晶圆测量与仿真不一致时，怎样定位责任和调整流程？</span></p><p class="takeaway">想确认：可机器执行的验收标准，以及仿真合格与生产合格的关系。</p>
+      </section>
+      <section class="slide" data-title="交付与难点" hidden aria-labelledby="title-6">
+        <div class="section-tag">06 / 输出与工作重心</div><h2 id="title-6">最后交付什么，<br>精力主要花在哪里？</h2><p class="intro">我们想找出值得交给 Agent 的具体环节，而不只是在 benchmark 上调分数。</p>
+        <div class="questions">
+          <div class="question"><span class="question-num">A</span><div><h3>交付物到底是什么？</h3><p>优化后的掩模版图、可复用 recipe、工艺参数、验证报告和运行记录，分别由谁交付、谁验收？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>最费时间和经验的是哪一步？</h3><p>定位问题、理解成因、调参数、写局部规则、等待仿真、回归验证，还是跨团队确认？能否举一个近期的典型例子？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>我们的 benchmark 最遗漏什么？</h3><p>如果只能补上一个工业难点，您会选什么？哪些步骤适合先自动化，哪些判断仍需工程师负责？</p></div></div>
+        </div><p class="takeaway">想确认：真正有价值的任务边界，以及评价 Agent 是否有帮助的方法。</p>
+      </section>
+      <section class="slide" data-title="用实例串起来" hidden aria-labelledby="title-7">
+        <div class="section-tag">07 / 最后用一个例子串起来</div><h2 id="title-7">能否用一个脱敏任务，<br>带我们走一遍？</h2><p class="intro">不必先提供实际数据；先口述一个任务的结构，也能帮助我们建立正确理解。</p>
+        <dl class="task-sheet">
+          <div class="task-row"><dt>任务起点</dt><dd>谁提出了什么问题？最初有哪些文件、已有结果和固定条件？</dd></div>
+          <div class="task-row"><dt>可用动作</dt><dd>工程师会打开哪些工具、查什么资料，允许修改哪些内容？</dd></div>
+          <div class="task-row"><dt>一次迭代</dt><dd>看到什么现象 → 做出什么修改 → 跑什么检查 → 怎样决定保留或回退？</dd></div>
+          <div class="task-row"><dt>完成条件</dt><dd>满足哪些阈值、完成哪些回归、由谁确认，最后交付什么？</dd></div>
+        </dl><p class="endline">希望带走：最小任务包 + 基线工作流 + 验收方式。<span>据此再设计一个贴近真实工作的 OPC Agent 试点。</span></p>
+      </section>
+    </div>
+    <section class="notes" id="notes-panel" hidden><label for="meeting-note" id="notes-label">本页记录</label><textarea id="meeting-note" placeholder="记下工程师的回答、实际案例或待确认事项……"></textarea><p class="notes-tip">记录仅保存在当前浏览器，可点击“导出记录”保存为文本。</p></section>
+    <footer class="footer"><div><div class="progress-label"><strong id="page-current">01</strong> / 08</div><div class="progress-track"><div class="progress-fill" id="progress"></div></div></div><div class="paging"><span class="key-hint">← → 翻页 · F 全屏</span><button id="prev" aria-label="上一页">← 上一页</button><button class="next" id="next" aria-label="下一页">下一页 →</button></div></footer>
+  </main>
+</div>
+<script>
+  const slides=[...document.querySelectorAll('.slide')],nav=document.querySelector('.nav');
+  const titles=slides.map(s=>s.dataset.title),storageKey='opc-industry-discussion-notes-v1';
+  let current=0,notes={};
+  try{notes=JSON.parse(localStorage.getItem(storageKey)||'{}');if(!notes||typeof notes!=='object'||Array.isArray(notes))notes={}}catch{notes={}}
+  const note=document.querySelector('#meeting-note');
+  titles.forEach((title,i)=>{const b=document.createElement('button');b.type='button';b.innerHTML='<span>'+String(i).padStart(2,'0')+'</span>';b.append(document.createTextNode(title));b.addEventListener('click',()=>go(i));nav.append(b)});
+  function go(index,updateHash=true){current=Math.min(slides.length-1,Math.max(0,index));slides.forEach((s,i)=>s.hidden=i!==current);[...nav.children].forEach((b,i)=>{if(i===current)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});document.querySelector('#page-current').textContent=String(current+1).padStart(2,'0');document.querySelector('#progress').style.width=((current+1)/slides.length*100)+'%';document.querySelector('#prev').disabled=current===0;document.querySelector('#next').disabled=current===slides.length-1;note.value=typeof notes[current]==='string'?notes[current]:'';document.querySelector('#notes-label').textContent=titles[current]+' · 现场记录';if(updateHash)history.replaceState(null,'','#'+(current+1));if(matchMedia('(max-width:720px)').matches){nav.children[current].scrollIntoView({block:'nearest',inline:'nearest'});window.scrollTo({top:0,behavior:'instant'})}document.title=titles[current]+' · OPC 工业任务交流'}
+  function fromHash(){const n=Number(location.hash.slice(1));go(Number.isInteger(n)&&n>=1&&n<=slides.length?n-1:0,false)}
+  document.querySelector('#prev').addEventListener('click',()=>go(current-1));document.querySelector('#next').addEventListener('click',()=>go(current+1));window.addEventListener('hashchange',fromHash);
+  document.addEventListener('keydown',e=>{if(e.target.closest('textarea,input,select,button,a')||e.ctrlKey||e.metaKey||e.altKey)return;if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(current+1)}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(current-1)}if(e.key==='Home'){e.preventDefault();go(0)}if(e.key==='End'){e.preventDefault();go(slides.length-1)}if(e.key.toLowerCase()==='f'){if(document.fullscreenElement)document.exitFullscreen?.().catch(()=>{});else document.documentElement.requestFullscreen?.().catch(()=>{})}});
+  document.querySelector('#notes-toggle').addEventListener('click',e=>{const panel=document.querySelector('#notes-panel');panel.hidden=!panel.hidden;e.currentTarget.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)note.focus()});
+  note.addEventListener('input',()=>{notes[current]=note.value;try{localStorage.setItem(storageKey,JSON.stringify(notes))}catch{document.querySelector('.notes-tip').textContent='当前浏览器无法自动保存，请导出记录后再关闭页面。'}});
+  document.querySelector('#export').addEventListener('click',()=>{const text='OPC 工业任务交流 · 现场记录\n\n'+titles.map((t,i)=>String(i).padStart(2,'0')+' / '+t+'\n'+(notes[i]||'（暂无记录）')).join('\n\n');const url=URL.createObjectURL(new Blob(['\uFEFF'+text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='OPC交流记录.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+  document.querySelector('#print').addEventListener('click',()=>window.print());fromHash();
+</script>
+</body>
+</html>
