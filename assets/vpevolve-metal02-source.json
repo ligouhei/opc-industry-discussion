@@ -1,0 +1,30 @@
+{
+  "dataset": "VPEvolve local case assets",
+  "case_id": "metal_02",
+  "source_file": "layout.gds",
+  "sha256": "cb6facdb4e9ff644071a5b414fae661a6e5027615ca56e6160cd4de6f2751dc3",
+  "top_cell": "VPEVOLVE_WINDOW",
+  "target_layer": [
+    11,
+    0
+  ],
+  "target_polygon_count": 340,
+  "gds_unit_um": 9.999999999999999e-05,
+  "target_layer_bbox_um": [
+    0.0,
+    4.22,
+    20.0,
+    19.93
+  ],
+  "core_bbox_um": [
+    6.675999999999999,
+    6.9315,
+    16.676,
+    16.9315
+  ],
+  "core_size_um": [
+    10.0,
+    10.0
+  ],
+  "note": "Rendered from GDS polygons without layout scaling. Left panel is all target-layer geometry in this case file, not a full-chip view. Right panel is the configured core window; viewport clipping is for illustration only."
+}

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f5f4ef">
-  <meta name="description" content="从 ReAct 的训练要素出发，对照 VPEvolve 实验，讨论构造真实 OPC 任务、轨迹与评价数据需要的材料。">
+  <meta name="description" content="从 ReAct 执行循环出发，以质量、多样性和真实性为核心，对照 VPEvolve 局部图形，讨论工业 OPC 的环境、任务和执行流程。">
   <title>OPC Agent 训练数据与环境 · 技术交流</title>
   <style>
     :root{--paper:#f5f4ef;--ink:#19342f;--muted:#6c7972;--line:#d7ddd4;--accent:#247665;--wash:#e6ece4;--orange:#bd603c;--white:#fffefa}
@@ -17,6 +17,10 @@
     @media(max-width:720px){.app{display:block}.sidebar{position:static;width:100%;padding:19px 20px 0;border-right:0}.brand{font-size:12px}.brand-mark{width:20px;height:20px}.sidebar-label,.sidebar-foot{display:none}.nav{margin-top:19px;flex-direction:row;overflow-x:auto;padding-bottom:13px;gap:5px;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav button{white-space:nowrap;font-size:12px;padding:9px 11px}.nav button span{display:none}.main{min-height:calc(100svh - 117px)}.topbar{height:54px;margin:0 20px}.eyebrow{font-size:9px;letter-spacing:.08em}.actions{gap:13px}.topbar .eyebrow{font-size:0}.topbar .eyebrow:after{content:"OPC 交流";font-size:10px}.text-button{font-size:11px}.stage{min-height:0;padding:35px 24px;align-items:flex-start}.section-tag{font-size:11px;margin-bottom:18px}h1{font-size:39px}h2{font-size:29px}.intro{font-size:14px;margin-top:15px}.flow{grid-template-columns:1fr;margin-top:27px}.flow-item{display:grid;grid-template-columns:75px 100px 1fr;align-items:center;padding:13px 0;border-bottom:1px solid var(--line);gap:6px}.flow-item:last-child{border-bottom:0}.flow small,.flow b{margin:0}.flow b{font-size:14px}.flow em{font-size:11px}.flow-item:not(:last-child):after{display:none}.context{gap:12px;font-size:12px;margin-top:20px}.questions{margin-top:25px}.question{grid-template-columns:25px 1fr;gap:7px;padding:21px 0}.question h3{font-size:17px}.question p{font-size:13px}.takeaway{font-size:12px;margin-top:21px}.footer{margin:0 20px;padding:18px 0;position:relative}.paging button{padding:11px 15px;font-size:12px}.progress-track{width:70px}.metric-table{font-size:12px;margin-top:24px}.metric-table td{padding:15px 8px 15px 0}.metric-table td:first-child{width:24%}.metric-note{font-size:15px}.metric-note span{font-size:12px}.task-sheet{padding:5px 17px;margin-top:24px}.task-row{grid-template-columns:65px 1fr;gap:12px;font-size:13px;padding:14px 0}.task-row dt{font-size:11px}.endline{font-size:16px}.notes{margin:0 24px 24px}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
     @media print{@page{size:A4 landscape;margin:16mm}.sidebar,.topbar,.footer,.notes{display:none!important}.app,.main,.stage{display:block;min-height:0;padding:0;margin:0}.slide,.slide[hidden]{display:block!important;animation:none;break-after:page;padding:6mm 0;max-width:none}.slide:last-child{break-after:auto}h1{font-size:40px}h2{font-size:32px}.intro{font-size:14px}.question{padding:16px 0}.question h3{font-size:17px}.question p{font-size:13px}.questions{margin-top:22px}.flow{margin-top:25px}.context{font-size:12px}.cover-stamp{display:block}.task-sheet{background:#eef1ed!important;print-color-adjust:exact}.metric-table{font-size:13px}}
+
+    .layout-figure{margin:24px 0 0}.layout-figure img{display:block;width:100%;height:auto;max-height:330px;object-fit:contain;background:#fffefa;border:1px solid var(--line)}.layout-figure figcaption{font-size:11px;line-height:1.8;color:var(--muted);margin-top:9px}.scope-flow{display:flex;align-items:center;gap:16px;margin-top:24px;padding:17px 20px;background:var(--wash);font-size:15px;line-height:1.7}.scope-flow span{flex:1}.scope-flow i{font-style:normal;color:var(--accent)}
+    @media(max-width:720px){.scope-flow{flex-direction:column;align-items:flex-start;gap:5px;font-size:13px;padding:15px}.scope-flow i{transform:rotate(90deg)}.layout-figure img{max-height:none}.layout-figure figcaption{font-size:10px}}
+    @media print{.layout-figure img{max-height:290px}.scope-flow{margin-top:16px;padding:12px 16px}.scope-flow+.questions{margin-top:16px}}
   </style>
 </head>
 <body>
@@ -25,7 +29,7 @@
     <div class="brand"><span class="brand-mark" aria-hidden="true"></span>OPC / DIALOGUE</div>
     <div class="sidebar-label">DISCUSSION GUIDE</div>
     <nav class="nav" aria-label="分页导航"></nav>
-    <div class="sidebar-foot"><strong>与华虹技术交流</strong><br>OPC Agent 的训练数据与环境<br>任务 · 动作 · 反馈 · 验收</div>
+    <div class="sidebar-foot"><strong>与华虹技术交流</strong><br>OPC Agent 的训练数据与环境<br>质量 · 多样性 · 真实性</div>
   </aside>
   <main class="main">
     <header class="topbar">
@@ -33,75 +37,72 @@
       <div class="actions"><button class="text-button" id="notes-toggle" aria-expanded="false">现场记录</button><button class="text-button export" id="export">导出记录</button><button class="text-button" id="print">打印 / PDF</button></div>
     </header>
     <div class="stage" aria-live="polite">
-      <section class="slide" data-title="ReAct 与训练要素" aria-labelledby="title-0">
-        <div class="section-tag">00 / ReAct 与模型训练</div>
-        <div class="cover-head"><h1 id="title-0">训练 OPC Agent，<br>需要什么数据与环境？</h1><div class="cover-stamp">TASK → ACTION<br>↑　　　　↓<br>FEEDBACK ← TOOL</div></div>
-        <p class="intro">ReAct：模型根据任务和已有结果选择动作，调用工具，观察反馈，再决定下一步。训练与评测这类能力，需要可执行的任务、真实反馈，以及明确的完成标准。</p>
-        <div class="flow" aria-label="训练与评测的五个要素">
-          <div class="flow-item"><small>TASK</small><b>任务</b><em>目标、约束、初始状态</em></div>
-          <div class="flow-item"><small>ENVIRONMENT</small><b>环境</b><em>文件、软件、模型、资料</em></div>
-          <div class="flow-item"><small>ACTION</small><b>动作</b><em>可编辑内容、可用工具</em></div>
-          <div class="flow-item"><small>OBSERVATION</small><b>反馈</b><em>运行结果、日志、诊断</em></div>
-          <div class="flow-item"><small>EVALUATION</small><b>评价</b><em>验收规则、得分、终止条件</em></div>
-        </div>
-        <div class="context"><span class="context-label">交流目标</span><p><strong>以真实 OPC 工作为参照，确定任务包和数据采集方式。</strong><br>工程师的操作记录可构成示范轨迹；可重复运行的环境与验收程序可支持模型自行探索、训练和评测。</p></div>
+      <section class="slide" data-title="ReAct 执行模式" aria-labelledby="title-0">
+        <div class="section-tag">00 / 当前工具型 Agent 的执行模式</div>
+        <div class="cover-head"><h1 id="title-0">给定任务与环境，<br>在思考与行动中迭代。</h1><div class="cover-stamp">REASON → ACT<br>↑　　　　↓<br>OBSERVE ← TOOL</div></div>
+        <p class="intro">当前这类工具型 Agent 通常按 ReAct 方式工作：先根据任务和环境思考，再行动、调用工具；根据行动的反馈继续思考和行动，直到完成任务或失败。</p>
+        <div class="flow" aria-label="ReAct 执行循环">
+          <div class="flow-item"><small>INPUT</small><b>任务与环境</b><em>目标、文件、工具、约束</em></div>
+          <div class="flow-item"><small>REASON</small><b>思考</b><em>分析现状，决定下一步</em></div>
+          <div class="flow-item"><small>ACT</small><b>行动</b><em>修改文件、调用工具</em></div>
+          <div class="flow-item"><small>OBSERVE</small><b>观察反馈</b><em>结果、日志、指标、错误</em></div>
+          <div class="flow-item"><small>ITERATE</small><b>继续或结束</b><em>再迭代，或判定完成 / 失败</em></div>
+        </div><div class="context"><span class="context-label">构造数据</span><p><strong>需要还原的，是模型实际面对的任务、环境和行动反馈。</strong><br>类比 coding：workspace + 任务描述 + 可用工具，模型在其中持续执行，并由测试或验收判断结果。</p></div>
       </section>
-      <section class="slide" data-title="Bench 任务结构" hidden aria-labelledby="title-1">
-        <div class="section-tag">01 / 当前实验与工作假设</div><h2 id="title-1">我们从 Benchmark，<br>推测出的任务结构。</h2><p class="intro">目前的信息主要来自 VPEvolve 及我们的实验适配。以下是当前实验配置，不能直接视为工厂的标准工作流。</p>
-        <table class="metric-table"><thead><tr><th>要素</th><th>当前实验中有什么</th></tr></thead><tbody>
-          <tr><td>输入与环境</td><td>GDS、选定图层与局部窗口、初始 recipe、固定研究工艺模型、Calibre。</td></tr>
-          <tr><td>任务与动作</td><td>在给定约束下改善结果；修改 recipe、运行工具、查看输出，再进行下一轮调整。</td></tr>
-          <tr><td>反馈与评价</td><td>轮廓、热点、EPE / PVB 等指标及规则检查；与基线比较，判断候选是否可保留。</td></tr>
-        </tbody></table><p class="metric-note">需要对齐：真实任务是否也能这样拆解？<span>差异可能在版图规模、工艺模型、操作范围、工具反馈和验收要求，需要用实际任务逐项确认。</span></p><p class="takeaway">下一步不是直接扩展 benchmark，而是拿到实际任务的组成和执行过程，据此构造数据。</p>
-      </section>
-      <section class="slide" data-title="任务与初始环境" hidden aria-labelledby="title-2">
-        <div class="section-tag">02 / Task + Workspace</div><h2 id="title-2">一条真实任务，<br>从什么状态开始？</h2><p class="intro">类比 coding：任务描述 + git / workspace + 依赖环境。OPC 中需要对应到具体文件和配置。</p>
+      <section class="slide" data-title="数据的三个要素" hidden aria-labelledby="title-1">
+        <div class="section-tag">01 / 数据构造的核心要求</div><h2 id="title-1">质量、多样性、真实性。</h2><p class="intro">多样性有较大的设计空间，但需要以真实工程为依据，避免造出形式丰富、实际用不上的任务。</p>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>任务如何提出，具体要解决什么？</h3><p>开发一套 recipe、修复一类热点、适配新设计，还是完成某个图层的 OPC？一次任务的范围和目标如何描述？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>初始目录中有哪些文件？</h3><p>完整芯片、指定图层或局部图形？是否附带 target、初始 recipe、工艺模型、已有结果、运行脚本和参考资料？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>哪些条件固定，哪些属于优化对象？</h3><p>工具及版本、模型及校准状态、测量方式和规则检查由谁确定？哪些内容允许 OPC 工程师调整？</p></div></div>
-        </div><p class="takeaway">对应数据：任务描述、初始文件快照、依赖与版本、固定项和可修改项。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>质量：任务与反馈是否可靠</h3><p>任务描述清楚，文件和依赖完整，动作与结果能对应，验收标准明确；成功、失败与未完成都有可信依据。</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>多样性：环境、任务、执行过程</h3><p>环境多样性：不同 workspace 和工具条件；任务多样性：不同范围、目标和问题；执行多样性：不同拆解方式、操作顺序和解决路径。</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>真实性：与工程师的实际工作一致</h3><p>输入来自真实工作场景，可用动作符合实际能力，反馈来自相应工具和流程，评价反映工程上是否真正解决了问题。</p></div></div>
+        </div><p class="takeaway">本次交流围绕三类多样性展开，用实际工程校准后续的数据构造。</p>
       </section>
-      <section class="slide" data-title="动作与工具接口" hidden aria-labelledby="title-3">
-        <div class="section-tag">03 / Action + Tools</div><h2 id="title-3">模型应当能做哪些动作，<br>通过哪些接口执行？</h2><p class="intro">类比 coding：编辑文件、执行 command、调用 tools。需要保留工程师实际可用的操作能力。</p>
+      <section class="slide" data-title="Bench 局部图" hidden aria-labelledby="title-2">
+        <div class="section-tag">02 / 当前 VPEvolve 适配实验</div><h2 id="title-2">现有任务，主要是单图层的局部优化。</h2><p class="intro">任务包包含 GDS、SVRF 初始 recipe；配合固定工艺模型、工具和 EPE 等验收指标，限制 10 次候选评估，统计任务完成率。</p>
+        <figure class="layout-figure"><a href="assets/vpevolve-metal02.svg" target="_blank" rel="noopener" aria-label="打开 VPEvolve 局部版图大图"><img src="assets/vpevolve-metal02.svg" alt="从 VPEvolve metal_02 的真实 GDS 渲染：左侧为文件内目标图层的全部图形及橙色 10×10 微米窗口，右侧为该窗口放大图。"></a><figcaption>示例：metal_02，目标图层 11/0。左图仅表示该案例文件内的目标图层范围，不代表完整芯片；右图为当前实验的局部窗口。点击图片可放大。</figcaption></figure>
+        <div class="context"><span class="context-label">范围</span><p><strong>全芯片 GDS → 选定图层 → 图层中的局部裁剪窗口。</strong><br>当前看到的是最后一层级的优化任务，尚不足以代表真实工程中的全部任务类型。</p></div>
+      </section>
+      <section class="slide" data-title="环境多样性" hidden aria-labelledby="title-3">
+        <div class="section-tag">03 / 环境多样性 · 工程师拿到什么</div><h2 id="title-3">真实项目的 workspace，<br>包含哪些内容？</h2><p class="intro">我们目前的参照是“GDS + 初始 recipe + 目标 + 工具环境”。需要确认工业任务的实际组成和差异。</p>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>优化动作的实际范围是什么？</h3><p>调 recipe 参数、改分段策略、写图形相关规则、移动局部边缘、调整 SRAF，分别通过什么方式完成？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>哪些工具可以脚本化，哪些依赖 GUI？</h3><p>使用哪些 Calibre 产品或其他软件？命令、输入输出格式、参数说明和错误诊断是否有完整文档与示例？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>工程师做决策时还依赖什么信息？</h3><p>手册、历史案例、内部规则、可视化和经验判断，哪些可以成为模型可读取的上下文或检索资料？</p></div></div>
-        </div><p class="takeaway">对应数据：工具接口、命令示例、可编辑文件、操作文档，以及实际使用的参考资料。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>任务包是否也是这些文件？</h3><p>除了版图和 recipe，还会有工艺模型、规则文件、运行脚本、已有热点、历史结果、参考设计和验收配置吗？目录之间怎样关联？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>不同项目和阶段，初始环境怎样变化？</h3><p>从零开发 recipe、沿用已有 recipe、适配新设计或修复问题时，工程师获得的初始材料和已知信息有哪些不同？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>工具、模型与资料如何配套？</h3><p>软件模块及版本、工艺模型、手册和内部经验资料如何指定？哪些是固定条件，哪些允许工程师开发或调整？</p></div></div>
+        </div><p class="takeaway">需要的实际参照：项目目录示例、文件用途和依赖、工具入口、固定条件与可修改范围。</p>
       </section>
-      <section class="slide" data-title="迭代轨迹与反馈" hidden aria-labelledby="title-4">
-        <div class="section-tag">04 / Action → Observation → Next Action</div><h2 id="title-4">一次工程迭代，<br>怎样记录为训练数据？</h2><p class="intro">只保存最终 recipe，无法还原“遇到了什么问题、做了什么修改、结果怎样”。需要把动作与反馈对应起来。</p>
+      <section class="slide" data-title="任务多样性" hidden aria-labelledby="title-4">
+        <div class="section-tag">04 / 任务多样性 · 优化范围与目标</div><h2 id="title-4">全芯片、单图层、局部裁剪，<br>分别对应什么任务？</h2>
+        <div class="scope-flow" aria-label="需要确认的任务层级"><span>全芯片 GDS</span><i>→</i><span>某一图层的数据</span><i>→</i><span>该图层的局部裁剪</span></div>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>每轮实际看哪些结果？</h3><p>汇总指标之外，是否查看轮廓、误差坐标、违规类型、局部图形、日志及不同工艺条件下的结果？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>修改与运行过程能否完整保留？</h3><p>保存文件差异、工具命令与参数、输出文件、指标、耗时，以及候选被保留或回退的结论；同时保留失败尝试。</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>局部实验与全图层验证怎样衔接？</h3><p>工程师何时选热点、改通用规则、跑回归或全图层？能否从一个真实案例还原完整的决策顺序？</p></div></div>
-        </div><p class="takeaway">对应数据：初始状态 → 修改 / 调用 → 真实输出 → 指标与工程判断 → 下一轮，直到任务结束。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>工程师实际接到的是哪一个层级？</h3><p>是直接负责整个芯片、负责某个图层，还是接到局部热点？任务由谁拆分、分配，最后由谁负责整体结果？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>局部优化在整体任务中处于什么位置？</h3><p>是在代表性局部图形上开发 recipe，再应用到整层；还是分块独立修正，再做合并与全局验证？实际还存在什么方式？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>任务目标除了局部 EPE，还有哪些？</h3><p>recipe 开发、热点修复、设计适配、工艺窗口、掩模规则、运行效率等，分别怎样定义目标与完成标准？</p></div></div>
+        </div><p class="takeaway">需要的实际参照：任务类型、处理范围、分配方式，以及每类任务的优化目标。</p>
       </section>
-      <section class="slide" data-title="验收与训练反馈" hidden aria-labelledby="title-5">
-        <div class="section-tag">05 / Evaluation + Reward</div><h2 id="title-5">怎样把工程验收，<br>变成可计算的反馈？</h2><p class="intro">先明确工业上的合格标准，再设计训练得分。不能仅凭一个局部指标下降，就判断任务完成。</p>
-        <table class="metric-table"><thead><tr><th>需要明确</th><th>讨论内容</th></tr></thead><tbody>
-          <tr><td>优化目标</td><td>EPE、CD、工艺窗口、PVB、运行成本等如何排序？最坏点、违规数量与整体统计怎样取舍？</td></tr>
-          <tr><td>硬约束</td><td>哪些掩模规则、SRAF 打印问题、工艺条件或其他退化不可接受？如何自动检查？</td></tr>
-          <tr><td>完成条件</td><td>需要达到什么阈值、通过哪些回归？何时必须做全图层检查，何时还需晶圆测量或人工确认？</td></tr>
-        </tbody></table><p class="metric-note">哪些判断可以写成程序，哪些仍需工程师判定？<span>模型误差、仿真不稳定、运行失败、预算耗尽和任务未完成，应分别怎样记录与评价？</span></p><p class="takeaway">对应数据：验收程序或规则、基线结果、候选得分、失败原因，以及必要的人工标签。</p>
-      </section>
-      <section class="slide" data-title="数据覆盖与泛化" hidden aria-labelledby="title-6">
-        <div class="section-tag">06 / 任务分布与独立评测</div><h2 id="title-6">哪些任务与图形，<br>才有代表性？</h2><p class="intro">训练要覆盖真实工作中的问题，评测要检查模型能否处理未见过的任务，而不只是记住已有案例。</p>
+      <section class="slide" data-title="执行多样性" hidden aria-labelledby="title-5">
+        <div class="section-tag">05 / 执行多样性 · 工程师怎样做</div><h2 id="title-5">拿到一个完整任务后，<br>实际怎样分步执行？</h2><p class="intro">需要了解真实的操作顺序和判断依据，再决定模型可以探索哪些执行路径。</p>
         <div class="questions">
-          <div class="question"><span class="question-num">A</span><div><h3>真实工作主要由哪些任务构成？</h3><p>不同图层、工艺、设计、热点类型和任务阶段，各自常见的难点是什么？哪些环节最耗人工和经验？</p></div></div>
-          <div class="question"><span class="question-num">B</span><div><h3>局部数据需要保留多大上下文？</h3><p>裁剪窗口、邻近图形、密度和边界怎样影响结果？局部修正如何验证能推广到相似图形和整个图层？</p></div></div>
-          <div class="question"><span class="question-num">C</span><div><h3>怎样安排训练集、回归集与独立测试集？</h3><p>按设计、图形族或工艺划分是否更合理？实际有哪些历史案例和未参与调参的设计可用于验证？</p></div></div>
-        </div><p class="takeaway">对应数据：代表性任务集合、图形上下文、回归样本和独立测试任务，而非单个成功热点。</p>
+          <div class="question"><span class="question-num">A</span><div><h3>如何拆解、运行与汇总？</h3><p>如果输入是全芯片 GDS，是逐层运行 OPC，还是再划分窗口或热点逐步处理？分块由工程师还是软件完成，如何处理边界、汇总结果和验证整层？</p></div></div>
+          <div class="question"><span class="question-num">B</span><div><h3>看到反馈后，怎样选择下一步？</h3><p>查看哪些图形、轮廓、指标和日志？何时调参数、改规则、移动局部几何或调整 SRAF？何时回退、切换方案或进入全局回归？</p></div></div>
+          <div class="question"><span class="question-num">C</span><div><h3>手册和经验分别在什么时候起作用？</h3><p>先查手册制定方案，还是先按经验执行、遇到问题再查？哪些步骤必须依赖文档，哪些主要靠历史案例、个人经验或团队讨论？</p></div></div>
+        </div><p class="takeaway">需要的实际参照：任务拆解、工具调用、操作顺序、资料使用，以及保留或回退的判断依据。</p>
       </section>
-      <section class="slide" data-title="需要的实际材料" hidden aria-labelledby="title-7">
-        <div class="section-tag">07 / 从真实任务构造数据</div><h2 id="title-7">先用一个真实任务，<br>把数据与环境对应起来。</h2><p class="intro">讨论哪些材料已有留存、哪些可以脱敏提供、哪些需要在后续执行中补充采集。</p>
+      <section class="slide" data-title="一个实际案例" hidden aria-labelledby="title-6">
+        <div class="section-tag">06 / 用实际案例对齐流程</div><h2 id="title-6">选一个实际任务，<br>从输入走到交付。</h2><p class="intro">用同一个案例说明环境、任务和执行的关系，确认哪些环节已被当前 benchmark 覆盖，哪些尚未覆盖。</p>
         <dl class="task-sheet">
-          <div class="task-row"><dt>任务与输入</dt><dd>具体目标、初始 GDS / 图层 / 窗口、recipe、工艺模型或等价可调用环境。</dd></div>
-          <div class="task-row"><dt>执行环境</dt><dd>软件与版本、运行入口、工具接口、依赖配置、实际使用的手册或参考案例。</dd></div>
-          <div class="task-row"><dt>过程与结果</dt><dd>逐轮修改、命令、输出、指标和保留 / 回退结论；包含失败尝试及最终交付物。</dd></div>
-          <div class="task-row"><dt>验收与测试</dt><dd>基线、硬约束、完成标准、回归集，以及可独立验证的新增任务。</dd></div>
-        </dl><p class="endline">据此构造：可运行任务 + 工程师示范轨迹 + 可验证反馈。<span>先完成一个任务的重放与验收，再扩展任务类型和数据规模。</span></p>
+          <div class="task-row"><dt>初始状态</dt><dd>原始任务是什么？workspace 有哪些文件？已有 recipe、模型和基线结果处于什么状态？</dd></div>
+          <div class="task-row"><dt>任务拆解</dt><dd>怎样从芯片或图层定位到实际处理对象？任务如何分配，局部结果怎样应用到整体？</dd></div>
+          <div class="task-row"><dt>迭代过程</dt><dd>先做什么、看到什么反馈、为什么改变方案？实际使用了哪些工具、手册与经验？</dd></div>
+          <div class="task-row"><dt>结束与交付</dt><dd>怎样确认达标或失败？经过哪些回归与测量，最后交付掩模、recipe、报告还是其他产物？</dd></div>
+        </dl><p class="endline">由实际执行过程，反推训练数据需要保留的信息。<span>包括有效修改，也包括失败尝试、回退和任务未完成的情况。</span></p>
+      </section>
+      <section class="slide" data-title="后续数据构造" hidden aria-labelledby="title-7">
+        <div class="section-tag">07 / 后续数据构造</div><h2 id="title-7">以真实工作流为依据，<br>再扩展数据多样性。</h2><p class="intro">先确定任务怎么发生、工程师怎么执行，再设计数据分布与采集方式。</p>
+        <table class="metric-table"><thead><tr><th>构造维度</th><th>需要的实际材料</th></tr></thead><tbody>
+          <tr><td>环境多样性</td><td>不同项目或阶段的初始 workspace、文件说明、依赖、软件与模型配置，以及配套资料。</td></tr>
+          <tr><td>任务多样性</td><td>不同处理层级、问题类型和优化目标的任务描述、输入、基线及验收标准。</td></tr>
+          <tr><td>执行多样性</td><td>任务拆解与操作记录、文件变化、工具调用、反馈结果、资料使用和最终交付物。</td></tr>
+        </tbody></table><p class="metric-note">质量与真实性贯穿每一条数据。<span>让任务可执行、过程可追溯、反馈可信、验收有依据；再验证构造出的任务是否仍符合工程师的实际工作。</span></p><p class="takeaway">先用少量实际案例验证数据构造方式，再扩大环境、任务和执行路径的覆盖。</p>
       </section>
     </div>
     <section class="notes" id="notes-panel" hidden><label for="meeting-note" id="notes-label">本页记录</label><textarea id="meeting-note" placeholder="记录实际流程、可提供的材料与后续采集项……"></textarea><p class="notes-tip">记录仅保存在当前浏览器，可点击“导出记录”保存为文本。</p></section>
@@ -110,7 +111,7 @@
 </div>
 <script>
   const slides=[...document.querySelectorAll('.slide')],nav=document.querySelector('.nav');
-  const titles=slides.map(s=>s.dataset.title),storageKey='opc-industry-discussion-notes-react-v2';
+  const titles=slides.map(s=>s.dataset.title),storageKey='opc-industry-discussion-notes-diversity-v3';
   let current=0,notes={};
   try{notes=JSON.parse(localStorage.getItem(storageKey)||'{}');if(!notes||typeof notes!=='object'||Array.isArray(notes))notes={}}catch{notes={}}
   const note=document.querySelector('#meeting-note');
